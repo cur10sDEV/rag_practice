@@ -31,4 +31,4 @@ vector_store = QdrantVectorStore.from_documents(
     collection_name="learning_rag",
 )
 
-print("Chunking done!!!")
+print("Chunking and Embedding done!!!")

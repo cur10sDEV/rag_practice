@@ -30,7 +30,7 @@ vector_store = QdrantVectorStore.from_existing_collection(
 )
 
 # system prompt
-SYSTEM_PROMPT = f"""
+SYSTEM_PROMPT = """
 You are a helpful AI assistant who answers user query based on available context retrieved from a PDF file along with page_contents and a page number.
 
 You should only ans the user based on the following context and navigate the user to open the right page number to know more.
@@ -44,7 +44,7 @@ conversation_history = [
 
 while True:
     # take user input
-    user_query = input("Enter a query: ")
+    user_query = input("\n\nEnter a query: ")
 
     if user_query.strip().lower() == "exit":
         break
@@ -54,7 +54,7 @@ while True:
 
     context = "\n\n\n".join(
         [
-            f"Page Content: {result.page_content}\nPage Number: {result.metadata["page"]}\nFile Location: {result.metadata["source"]}"
+            f"Page Content: {result.page_content}\nPage Number: {result.metadata['page']}\nFile Location: {result.metadata['source']}"
             for result in search_results
         ]
     )

@@ -29,10 +29,11 @@ embedding_model = OpenAIEmbeddings(
     api_key="not_needed",
 )
 
-################################################################## chunking
+################################################################## document loading
 loader = PdfmuseLoader(PDF_FILE_PATH)
 docs = loader.load()
 
+################################################################## chunking
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
 chunks = splitter.split_documents(documents=docs)
 

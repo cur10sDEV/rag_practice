@@ -1,4 +1,3 @@
-# embeddings
 from os import getenv
 from pathlib import Path
 
@@ -12,6 +11,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_pdfmuse import PdfmuseLoader
 from langchain_qdrant import QdrantVectorStore
 from langchain_text_splitters.character import RecursiveCharacterTextSplitter
+from langsmith import traceable
 from qdrant_client import QdrantClient, models
 
 ################################################################## CONSTANTS
@@ -48,6 +48,7 @@ vector_store = QdrantVectorStore(
 
 
 ################################################################## creating qdrant collection and embeddings
+@traceable(name="create_embeddings")
 def create_embeddings(qdrant_client: QdrantClient, vector_store: QdrantVectorStore):
     collection = qdrant_client.get_collection(collection_name=COLLECTION_NAME)
 
@@ -97,6 +98,7 @@ llm = init_chat_model(
 
 
 ################################################################## utility functions
+@traceable(name="format_docs")
 def format_docs(documents: list[Document]):
     return "\n\n\n".join(
         [
@@ -117,7 +119,14 @@ rag_chain = (
     | StrOutputParser()
 )
 
-while True:
-    query = input("\n\nAsk me anything: ")
-    answer = rag_chain.invoke(query)
-    print(f"Answer: {answer}")
+
+@traceable(name="basic_rag_chain")
+def basic_rag_chain():
+    while True:
+        query = input("\n\nAsk me anything: ")
+        answer = rag_chain.invoke(query)
+        print(f"Answer: {answer}")
+
+
+if __name__ == "__main__":
+    basic_rag_chain()

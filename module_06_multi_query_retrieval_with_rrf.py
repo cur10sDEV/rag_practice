@@ -1,12 +1,12 @@
 import os
-import re
 import sys
+from typing import Annotated
 
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore, RetrievalMode
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import models
 
@@ -95,10 +95,10 @@ def get_user_query():
 
 # pydantic model for structured output
 class QueryVariations(BaseModel):
-    queries: list[str]
+    queries: Annotated[list[str], Field(min_length=3, max_length=3)]
 
 
-def generate_muti_query(query: str, llm: ChatOpenAI):
+def generate_multi_query(query: str, llm: ChatOpenAI):
     llm_with_tools = llm.with_structured_output(QueryVariations)
 
     prompt = f"""Generate 3 different variations of this query that would help retrieve relevant documents
@@ -122,7 +122,7 @@ def reciprocal_rank_fusion(
 
     for entry in chunks.values():
         for rank, (doc, _score) in enumerate(entry["chunks"]):
-            doc_id = doc.metadata.get("id") or doc.page_content
+            doc_id = doc.metadata.get("_id") or doc.page_content
             rrf_score = 1.0 / (k + rank + 1)
             doc_scores[doc_id] = doc_scores.get(doc_id, 0.0) + rrf_score
             doc_map[doc_id] = doc
@@ -144,7 +144,7 @@ def main():
     user_query = get_user_query()
 
     # generate query variations
-    query_variations = generate_muti_query(user_query, chat_model)
+    query_variations = generate_multi_query(user_query, chat_model)
 
     print("=" * 60)
     print("GENERATED QUERIES:")
@@ -177,7 +177,7 @@ def main():
             total_retrieved_chunks += 1
             print(f"--- {i} ---")
             print(f"SCORE: {doc[1]}")
-            print(doc[0], end="\n\n")
+            print(" ".join(doc[0].page_content.split()), end="\n\n")
     print(f"TOTAL RETRIEVED CHUNKS: {total_retrieved_chunks}", end="\n\n")
 
     fused_results = reciprocal_rank_fusion(retrieved_chunks, k=60)
@@ -187,7 +187,7 @@ def main():
     print("=" * 60)
     for rank, (doc, score) in enumerate(fused_results, 1):
         print(f"--- RANK: {rank} | RRF SCORE: {score:.4f} ---")
-        print(doc, end="\n\n")
+        print(" ".join(doc.page_content.split()), end="\n\n")
 
 
 if __name__ == "__main__":

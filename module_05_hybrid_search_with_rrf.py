@@ -100,7 +100,7 @@ def add_documents(qdrant_client: QdrantClient, vector_store: QdrantVectorStore):
     if qdrant_client.get_collection(COLLECTION_NAME).points_count > 0:
         print("DOCUMENTS ALREADY IN THERE")
     else:
-        f = open(FILE_PATH, "r")
+        f = open(FILE_PATH, "r", encoding="utf-8")
         cleaned_text = clean_script(f.read())
         f.close()
 
@@ -140,7 +140,7 @@ def get_document_chunks(
 
 def get_user_query():
     query = input("Enter a query: ")
-    return f"Instruct: Given a question about Linux internals, retrieve the book passage that best answers it\nQuery:{query}"
+    return f"Instruct: Given a question about The avengers movie script, retrieve the scenes that best answers it\nQuery:{query}"
 
 
 def main():

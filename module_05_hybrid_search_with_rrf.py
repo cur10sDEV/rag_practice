@@ -13,7 +13,6 @@ from qdrant_client.http.models import models
 
 # load envs
 load_dotenv()
-VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
 EMBEDDING_MODEL_API_KEY = os.getenv("EMBEDDING_MODEL_API_KEY")
 
 # constants

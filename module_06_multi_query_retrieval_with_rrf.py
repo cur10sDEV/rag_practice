@@ -12,7 +12,6 @@ from qdrant_client.http.models import models
 
 # load envs
 load_dotenv()
-VECTOR_DB_URL = os.getenv("VECTOR_DB_URL")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 EMBEDDING_MODEL_API_KEY = os.getenv("EMBEDDING_MODEL_API_KEY")
 
